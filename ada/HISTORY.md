@@ -1,5 +1,12 @@
 # History: earl
 
+
+## 2026-01-26 - move-urls-to-config
+
+**Type**: refactoring
+
+moved Earl URLs out of dotfiles and into Earl's own data
+
 > **Project Type**: python-cli
 
 Timeline of major changes and milestones. Most recent first.
