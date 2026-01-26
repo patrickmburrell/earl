@@ -1,17 +1,58 @@
 import os
+import shutil
 import tomllib
 from pathlib import Path
 
 
 #------------------------------------------------------------------------------------------------------------------------
+def _migrate_from_dotfiles(dotfiles_path: Path, config_path: Path) -> None:
+    """
+    One-time migration: copy urls.toml from dotfiles to ~/.config/earl/.
+
+    Args:
+        dotfiles_path: Source path in dotfiles
+        config_path: Destination path in ~/.config/earl/
+    """
+    # Create ~/.config/earl/ directory
+    config_path.parent.mkdir(parents=True, exist_ok=True)
+
+    # Copy urls.toml (don't move - keep original in dotfiles)
+    shutil.copy2(dotfiles_path, config_path)
+    print(f"Migrated urls.toml from {dotfiles_path} to {config_path}")
+
+
+#------------------------------------------------------------------------------------------------------------------------
 def get_urls_file() -> Path:
-    """Get path to global urls.toml file."""
-    earl_dir = os.getenv("EARL_DIR")
-    if earl_dir:
+    """
+    Get path to global urls.toml file.
+
+    Priority order:
+    1. $EARL_DIR/urls.toml (explicit override)
+    2. ~/.config/earl/urls.toml (XDG standard location)
+    3. $DOTFILES_ROOT/os/mac/bin/earl/urls.toml (backwards compatibility + migration)
+
+    If dotfiles location exists but ~/.config/earl/urls.toml doesn't, automatically migrate.
+    """
+    # 1. Check EARL_DIR override
+    if earl_dir := os.getenv("EARL_DIR"):
         return Path(earl_dir) / "urls.toml"
 
+    # 2. Check ~/.config/earl/urls.toml (new default)
+    config_path = Path.home() / ".config" / "earl" / "urls.toml"
+    if config_path.exists():
+        return config_path
+
+    # 3. Check dotfiles (backwards compatibility)
     dotfiles_root = os.getenv("DOTFILES_ROOT", "~/Projects/PMB/dotfiles")
-    return Path(dotfiles_root).expanduser() / "os" / "mac" / "bin" / "earl" / "urls.toml"
+    dotfiles_path = Path(dotfiles_root).expanduser() / "os" / "mac" / "bin" / "earl" / "urls.toml"
+
+    # 4. If dotfiles exists but config doesn't, migrate
+    if dotfiles_path.exists():
+        _migrate_from_dotfiles(dotfiles_path, config_path)
+        return config_path
+
+    # 5. Default to config location (even if doesn't exist yet)
+    return config_path
 
 
 #------------------------------------------------------------------------------------------------------------------------

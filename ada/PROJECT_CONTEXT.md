@@ -73,12 +73,17 @@ earl/
 ### Key Configuration Files
 **pyproject.toml**: Dependencies (typer, rich), entry point, build config, ruff settings
 **src/earl/__init__.py**: Version string (0.1.0)
+**File Locations** (priority order):
+1. `$EARL_DIR/urls.toml` - Explicit override (if `$EARL_DIR` set)
+2. `~/.config/earl/urls.toml` - Default location (XDG standard)
+3. `$DOTFILES_ROOT/os/mac/bin/earl/urls.toml` - Legacy location (auto-migrates to #2)
+
 **Environment variables**:
-- `EARL_DIR`: Directory containing urls.toml (default: `$DOTFILES_ROOT/os/mac/bin/earl`)
-- `DOTFILES_ROOT`: Path to dotfiles repo (default: `~/Projects/PMB/dotfiles`)
+- `EARL_DIR`: Override default config directory (optional)
+- `DOTFILES_ROOT`: Used for legacy migration only (optional)
 
 **TOML Files**:
-- Global URLs: `$EARL_DIR/urls.toml` - Organized by group (e.g., `work.aws`, `pmb.finance`)
+- Global URLs: `~/.config/earl/urls.toml` - Organized by group (e.g., `work.aws`, `pmb.finance`)
 - Project URLs: `.earl.toml` in project root - Project-specific URL sets with browser options
 
 ---
