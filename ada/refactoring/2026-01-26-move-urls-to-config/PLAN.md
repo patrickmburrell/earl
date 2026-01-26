@@ -25,6 +25,10 @@
 - [x] Final test on installed version
 - [x] Update dotfiles to remove EARL_DIR export
 - [x] Reload shell and verify Python versions are used
+- [x] Remove backwards compatibility code after successful migration
+- [x] Remove `_migrate_from_dotfiles()` function and simplify `get_urls_file()`
+- [x] Update docs to remove migration notes
+- [x] Commit and push final cleanup
 
 ---
 
