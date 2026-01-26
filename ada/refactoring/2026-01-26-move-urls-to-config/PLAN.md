@@ -19,10 +19,12 @@
 - [x] Test manually: `$EARL_DIR` override still works
 - [x] Update README.md configuration section
 - [x] Update PROJECT_CONTEXT.md key configuration files
-- [ ] Commit changes
-- [ ] Push to GitHub
-- [ ] Reinstall: `uv tool install --force git+https://github.com/patrickmburrell/earl`
-- [ ] Final test on installed version
+- [x] Commit changes
+- [x] Push to GitHub
+- [x] Reinstall: `uv tool install --force git+https://github.com/patrickmburrell/earl`
+- [x] Final test on installed version
+- [x] Update dotfiles to remove EARL_DIR export
+- [x] Reload shell and verify Python versions are used
 
 ---
 
