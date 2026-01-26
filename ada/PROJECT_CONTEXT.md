@@ -76,11 +76,9 @@ earl/
 **File Locations** (priority order):
 1. `$EARL_DIR/urls.toml` - Explicit override (if `$EARL_DIR` set)
 2. `~/.config/earl/urls.toml` - Default location (XDG standard)
-3. `$DOTFILES_ROOT/os/mac/bin/earl/urls.toml` - Legacy location (auto-migrates to #2)
 
 **Environment variables**:
 - `EARL_DIR`: Override default config directory (optional)
-- `DOTFILES_ROOT`: Used for legacy migration only (optional)
 
 **TOML Files**:
 - Global URLs: `~/.config/earl/urls.toml` - Organized by group (e.g., `work.aws`, `pmb.finance`)
@@ -378,15 +376,16 @@ brew install fzf
 ### Issue 2: No URLs file found
 **Symptom**: `Error: URLs file not found at ...`
 
-**Cause**: `EARL_DIR` or `DOTFILES_ROOT` not set correctly
+**Cause**: Global URLs file doesn't exist at `~/.config/earl/urls.toml`
 
 **Solution**:
 ```bash
-# Set environment variables
-export DOTFILES_ROOT="$HOME/Projects/PMB/dotfiles"
+# Create the config directory and file
+mkdir -p ~/.config/earl
+touch ~/.config/earl/urls.toml
 
-# Or set EARL_DIR directly
-export EARL_DIR="$HOME/Projects/PMB/dotfiles/os/mac/bin/earl"
+# Or set EARL_DIR to custom location
+export EARL_DIR="$HOME/custom/earl/location"
 ```
 
 ### Issue 3: Tab pinning doesn't work

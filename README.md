@@ -56,7 +56,7 @@ earl --help
 
 ### Global URLs
 
-Earl stores global URLs at `~/.config/earl/urls.toml`. On first run, Earl will automatically migrate your existing urls.toml from dotfiles if found.
+Earl stores global URLs at `~/.config/earl/urls.toml`.
 
 Edit your global URLs:
 
@@ -183,20 +183,10 @@ Earl checks for urls.toml in the following order:
 
 1. **`$EARL_DIR/urls.toml`** - Explicit override (if `$EARL_DIR` is set)
 2. **`~/.config/earl/urls.toml`** - Default location (XDG standard)
-3. **`$DOTFILES_ROOT/os/mac/bin/earl/urls.toml`** - Legacy location (auto-migrates to #2)
-
-### Migration from Dotfiles
-
-If you previously used Earl from dotfiles, your urls.toml has been automatically copied to `~/.config/earl/urls.toml` on first run.
-
-**Important**: If you have `$EARL_DIR` set in your environment, you'll need to either:
-- Unset it to use the new `~/.config/earl/` location, OR
-- Update it: `export EARL_DIR="$HOME/.config/earl"`
 
 ### Environment Variables
 
 - `EARL_DIR`: Override default config directory (optional)
-- `DOTFILES_ROOT`: Used for legacy migration only (optional)
 
 ## Development
 
