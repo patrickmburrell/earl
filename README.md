@@ -16,17 +16,19 @@ Earl is a Python CLI tool that helps you organize and quickly launch web URLs by
 
 ## Installation
 
-### From GitHub (Recommended)
+### Local Install (Recommended)
 
 ```bash
-uv tool install git+https://github.com/patrickmburrell/earl
+# Global install - available everywhere
+cd /Users/AIUW003/Projects/PMB/earl
+uv tool install --editable .
 ```
 
-### From Local Directory
+### From GitHub
 
 ```bash
-cd /path/to/earl
-uv tool install --editable .
+# Install from remote repository
+uv tool install git+https://github.com/patrickmburrell/earl
 ```
 
 ## Usage
