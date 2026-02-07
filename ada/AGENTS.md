@@ -1,10 +1,12 @@
-# Project Context: earl
+# AI Agent Context: earl
 
-> **For AI**: Read this for Python CLI project overview, architecture, key decisions, and current state. Then check HISTORY.md for timeline.
-> **Project Type**: python-cli
-> **Last Updated**: 2026-01-26
+> **For AI**: Read this for project overview, architecture, key decisions, and current state.
+> **Location**: This file is located at `ada/AGENTS.md` to maintain self-contained context architecture.
 
----
+## Project Overview
+**Type**: Python CLI Tool
+**Last Updated**: 2026-01-29
+
 
 ## Current State
 **Status**: Phase 3 Complete - Testing

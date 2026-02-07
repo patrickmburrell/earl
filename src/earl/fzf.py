@@ -1,8 +1,12 @@
 import subprocess
 
 
-#------------------------------------------------------------------------------------------------------------------------
-def fzf_select(items: list[str], prompt: str = "> ", header: str = "") -> str | None:
+# ----------------------------------------------------------------------------------------------------------------------
+def fzf_select(
+    items: list[str],
+    prompt: str = "> ",
+    header: str = "",
+) -> str | None:
     """
     Present items in fzf for interactive selection.
 

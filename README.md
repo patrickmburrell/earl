@@ -37,18 +37,24 @@ uv tool install git+https://github.com/patrickmburrell/earl
 # Interactive mode - select group, then URL
 earl
 
-# Filter to specific groups
-earl work          # Show all work.* groups
-earl pmb           # Show all pmb.* groups
+# Interactive, with group filter
+earl browse work          # Show all work.* groups
+earl browse pmb           # Show all pmb.* groups
 
-# Open all URLs in a group
-earl -a work.aws
+# Open all URLs in a global group
+earl open-all work.aws
 
-# Open project URLs from .earl.toml
-earl -p
+# Open project URLs from nearest .earl.toml (searches up tree)
+earl project open
+
+# Open project URLs from explicit file
+# earl project open path/to/.earl.toml
 
 # List Chrome profiles
-earl --list-profiles
+earl chrome profiles
+
+# Capture current Chrome window -> .earl.toml
+earltmp="/tmp/.earl.toml" && earl capture chrome -o "$earltmp"
 
 # Show help
 earl --help
@@ -110,7 +116,7 @@ url = "https://ci.your-project.com"
 Then from anywhere in your project:
 
 ```bash
-earl -p  # Opens all project URLs in Chrome with specified profile
+earl project open  # Opens all project URLs in Chrome with specified profile
 ```
 
 ## Chrome Profiles
@@ -118,7 +124,7 @@ earl -p  # Opens all project URLs in Chrome with specified profile
 Find your Chrome profile directory names:
 
 ```bash
-earl --list-profiles
+earl chrome profiles
 ```
 
 Output:
