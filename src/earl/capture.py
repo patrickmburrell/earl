@@ -5,11 +5,13 @@ from urllib.parse import urlparse
 
 from loguru import logger
 
-from earl.browsers import ChromeTab
+from earl.browsers import BrowserTab
 
 DEFAULT_PROJECT_FILE_NAME = ".earl.toml"
-DEFAULT_BROWSER = "chrome"
 CHROME_PROFILE_PLACEHOLDER = "CHROME_PROFILE_HERE"
+
+BROWSER_CHROME = "chrome"
+BROWSER_SAFARI = "safari"
 
 TABITHA_PINNED_URL_PREFIX = "https://tabitha.smallblocksoftware.com/"
 
@@ -26,8 +28,8 @@ class ProjectUrl:
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def build_project_urls_from_tabs(tabs: list[ChromeTab]) -> list[ProjectUrl]:
-    """Convert Chrome tabs -> ProjectUrl list (deduped names, ignores non-http(s) URLs)."""
+def build_project_urls_from_tabs(tabs: list[BrowserTab]) -> list[ProjectUrl]:
+    """Convert browser tabs -> ProjectUrl list (deduped names, ignores non-http(s) URLs)."""
     used_names: dict[str, int] = {}
     urls: list[ProjectUrl] = []
 
@@ -53,20 +55,27 @@ def build_project_urls_from_tabs(tabs: list[ChromeTab]) -> list[ProjectUrl]:
 # ----------------------------------------------------------------------------------------------------------------------
 def render_project_toml(
     *,
-    chrome_profile: str,
+    browser: str,
+    chrome_profile: str | None,
     chrome_profile_dir_hint: str | None,
     urls: list[ProjectUrl],
 ) -> str:
     """Render Earl project-format TOML for `.earl.toml`."""
+    browser_value = browser.lower().strip()
+    if browser_value not in {BROWSER_CHROME, BROWSER_SAFARI, "default"}:
+        raise ValueError(f"Unsupported browser: {browser}")
+
     lines: list[str] = []
 
     lines.append("[options]")
-    lines.append(f"browser = {_toml_quote(DEFAULT_BROWSER)}")
+    lines.append(f"browser = {_toml_quote(browser_value)}")
 
-    profile_line = f"chrome_profile = {_toml_quote(chrome_profile)}"
-    if chrome_profile_dir_hint:
-        profile_line = f"{profile_line}  # dir: {chrome_profile_dir_hint}"
-    lines.append(profile_line)
+    if browser_value == BROWSER_CHROME:
+        profile = chrome_profile or CHROME_PROFILE_PLACEHOLDER
+        profile_line = f"chrome_profile = {_toml_quote(profile)}"
+        if chrome_profile_dir_hint:
+            profile_line = f"{profile_line}  # dir: {chrome_profile_dir_hint}"
+        lines.append(profile_line)
 
     for entry in urls:
         lines.append("")

@@ -7,6 +7,7 @@ from pathlib import Path
 from loguru import logger
 
 CHROME_APP_NAME = "Google Chrome"
+SAFARI_APP_NAME = "Safari"
 OPEN_BIN = "open"
 OSASCRIPT_BIN = "osascript"
 
@@ -22,7 +23,7 @@ PIN_TAB_MENU_ITEM = "Pin Tab"
 
 # =====================================================================================================================
 @dataclass(frozen=True, slots=True)
-class ChromeTab:
+class BrowserTab:
     title: str
     url: str
 
@@ -63,7 +64,7 @@ def resolve_chrome_profile(profile_input: str) -> str:
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def get_chrome_front_window_tabs() -> list[ChromeTab]:
+def get_chrome_front_window_tabs() -> list[BrowserTab]:
     """Return (title, url) for tabs in Chrome's frontmost window."""
     script = """
 (() => {
@@ -103,7 +104,7 @@ def get_chrome_front_window_tabs() -> list[ChromeTab]:
         logger.warning("Failed parsing osascript output as JSON")
         return []
 
-    tabs: list[ChromeTab] = []
+    tabs: list[BrowserTab] = []
 
     if not isinstance(raw, list):
         return []
@@ -115,7 +116,65 @@ def get_chrome_front_window_tabs() -> list[ChromeTab]:
         url = item.get("url")
         if not isinstance(url, str) or not url:
             continue
-        tabs.append(ChromeTab(title=title if isinstance(title, str) else "", url=url))
+        tabs.append(BrowserTab(title=title if isinstance(title, str) else "", url=url))
+
+    return tabs
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+def get_safari_front_window_tabs() -> list[BrowserTab]:
+    """Return (title, url) for tabs in Safari's frontmost window."""
+    script = """
+(() => {
+  try {
+    const safari = Application("Safari");
+    const windows = safari.windows();
+    if (windows.length === 0) {
+      return JSON.stringify([]);
+    }
+
+    const tabs = windows[0].tabs().map(t => ({
+      title: String(t.name()),
+      url: String(t.url()),
+    }));
+
+    return JSON.stringify(tabs);
+  } catch (e) {
+    return JSON.stringify([]);
+  }
+})();
+""".strip()
+
+    result = subprocess.run(
+        [OSASCRIPT_BIN, "-l", "JavaScript", "-e", script],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    if result.returncode != 0:
+        logger.warning("Failed reading Safari tabs via osascript: {}", result.stderr.strip())
+        return []
+
+    try:
+        raw = json.loads(result.stdout.strip() or "[]")
+    except json.JSONDecodeError:
+        logger.warning("Failed parsing osascript output as JSON")
+        return []
+
+    tabs: list[BrowserTab] = []
+
+    if not isinstance(raw, list):
+        return []
+
+    for item in raw:
+        if not isinstance(item, dict):
+            continue
+        title = item.get("title")
+        url = item.get("url")
+        if not isinstance(url, str) or not url:
+            continue
+        tabs.append(BrowserTab(title=title if isinstance(title, str) else "", url=url))
 
     return tabs
 

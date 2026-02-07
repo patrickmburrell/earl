@@ -56,6 +56,9 @@ earl chrome profiles
 # Capture current Chrome window -> .earl.toml
 earltmp="/tmp/.earl.toml" && earl capture chrome -o "$earltmp"
 
+# Capture current Safari window -> .earl.toml
+earltmp="/tmp/.earl.safari.toml" && earl capture safari -o "$earltmp"
+
 # Show help
 earl --help
 ```

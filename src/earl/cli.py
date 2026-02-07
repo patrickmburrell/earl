@@ -8,6 +8,7 @@ from rich.table import Table
 from earl.browsers import (
     get_chrome_front_window_tabs,
     get_chrome_profiles,
+    get_safari_front_window_tabs,
     open_urls_chrome,
     open_urls_default,
     open_urls_safari,
@@ -222,8 +223,52 @@ def capture_chrome(
             raise typer.Exit(1)
 
     contents = render_project_toml(
+        browser="chrome",
         chrome_profile=chrome_profile,
         chrome_profile_dir_hint=chrome_profile_dir_hint,
+        urls=urls,
+    )
+
+    write_project_file(path=out_path, contents=contents, overwrite=overwrite)
+    console.print(f"[green]Wrote:[/green] {out_path}")
+
+
+# ----------------------------------------------------------------------------------------------------------------------
+@capture_app.command(name="safari")
+def capture_safari(
+    output: Path | None = typer.Option(None, "--output", "-o", help="Output file path"),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite output file if it exists"),
+    prompt_front_window: bool = typer.Option(
+        True,
+        "--prompt-front-window/--no-prompt-front-window",
+        help="Prompt to bring the target Safari window to the front before capture",
+    ),
+) -> None:
+    """Generate a `.earl.toml` from the front Safari window's tabs."""
+    if prompt_front_window:
+        typer.prompt("Bring target Safari window to the front, then press Enter", default="", show_default=False)
+
+    tabs = get_safari_front_window_tabs()
+    if not tabs:
+        console.print("[red]Error:[/red] No Safari tabs found in the frontmost window")
+        raise typer.Exit(1)
+
+    urls = build_project_urls_from_tabs(tabs)
+    if not urls:
+        console.print("[red]Error:[/red] No http(s) tabs found in the frontmost window")
+        raise typer.Exit(1)
+
+    out_path = output.expanduser() if output else (Path.cwd() / DEFAULT_PROJECT_FILE_NAME)
+
+    if out_path.exists() and not overwrite:
+        overwrite = typer.confirm(f"{out_path} exists. Overwrite?", default=False)
+        if not overwrite:
+            raise typer.Exit(1)
+
+    contents = render_project_toml(
+        browser="safari",
+        chrome_profile=None,
+        chrome_profile_dir_hint=None,
         urls=urls,
     )
 
