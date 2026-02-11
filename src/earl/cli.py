@@ -127,7 +127,10 @@ def chrome_profiles() -> None:
 
 # ----------------------------------------------------------------------------------------------------------------------
 @project_app.command(name="open")
-def project_open(project_file: Path | None = typer.Argument(None, help="Explicit .earl.toml path")) -> None:
+def project_open(
+    project_file: Path | None = typer.Argument(None, help="Explicit .earl.toml path"),
+    incognito: bool = typer.Option(False, "--incognito", "-i", help="Open in Chrome incognito mode"),
+) -> None:
     """Open all URLs from a `.earl.toml` (explicit path or nearest parent search)."""
     resolved_project_file = project_file.expanduser() if project_file else find_project_file()
 
@@ -173,7 +176,11 @@ def project_open(project_file: Path | None = typer.Argument(None, help="Explicit
             pinned_indices.append(len(urls_to_open) - 1)
 
     _open_project_urls(
-        browser=browser, chrome_profile=chrome_profile, urls_to_open=urls_to_open, pinned_indices=pinned_indices
+        browser=browser,
+        chrome_profile=chrome_profile,
+        urls_to_open=urls_to_open,
+        pinned_indices=pinned_indices,
+        incognito=incognito,
     )
 
 
@@ -330,13 +337,15 @@ def _open_project_urls(
     chrome_profile: str,
     urls_to_open: list[str],
     pinned_indices: list[int],
+    incognito: bool,
 ) -> None:
     if not urls_to_open:
         console.print("[yellow]No URLs found[/yellow]")
         raise typer.Exit(1)
 
     if browser == "chrome":
-        open_urls_chrome(urls_to_open, pinned_indices if pinned_indices else None, chrome_profile)
+        profile = "" if incognito else chrome_profile
+        open_urls_chrome(urls_to_open, pinned_indices if pinned_indices else None, profile, incognito=incognito)
         return
 
     if browser == "safari":

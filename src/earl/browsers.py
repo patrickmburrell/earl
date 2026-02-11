@@ -180,15 +180,19 @@ def get_safari_front_window_tabs() -> list[BrowserTab]:
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-def open_urls_chrome(urls: list[str], pinned_indices: list[int] | None = None, profile: str = "") -> None:
+def open_urls_chrome(
+    urls: list[str], pinned_indices: list[int] | None = None, profile: str = "", incognito: bool = False
+) -> None:
     """Open URLs in Chrome with optional profile and pinned tabs."""
     if not urls:
         return
 
-    profile_dir = resolve_chrome_profile(profile) if profile else ""
+    profile_dir = resolve_chrome_profile(profile) if profile and not incognito else ""
 
     cmd = [OPEN_BIN, "-na", CHROME_APP_NAME, "--args"]
-    if profile_dir:
+    if incognito:
+        cmd.append("--incognito")
+    elif profile_dir:
         cmd.append(f"--profile-directory={profile_dir}")
 
     cmd.append("--new-window")
